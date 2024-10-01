@@ -75,10 +75,53 @@ Postman은 API 개발 및 테스트에 쓰이는 대표적인 툴이다.
   
   6. 추가적으로 환경 변수를 설정할 수 있다.
 
+
 - **장점**
   - UI가 직관적이고, 사용이 편리해 초보자도 쉽게 접근 가능하다. 
   - 요청 및 응답 결과를 한 눈에 확인할 수 있으며, 빠른 테스트가 가능하다. 
   - Team Workspace 기능을 통해 API 요청 및 문서를 팀원들과 공유하며 협업할 수 있다.
 
+
 - **단점**
   - 자동화된 문서화보다는 수작업이 많이 필요해 대규모 API 문서 작성에는 적합하지 않다.
+
+
+#### Swagger
+Swagger는 API 문서를 표준화하여 정의하고, 이를 기반으로 자동화된 문서 생성을 돕는 툴이다.
+최근에 Swagger의 스펙이 OAS(OpenAPI Specification)으로 통합 및 표준화되었다.
+애플리케이션을 실행하면 Swagger는 애노테이션을 통해 API 명세를 자동으로 생성한다.
+이후 웹 기반의 UI로 API를 테스트할 수 있다.
+
+- **사용법 (Spring Boot 프로젝트 기준)**
+    1. Build.gradle 파일에 의존성을 추가한다.
+    ```
+    dependencies {
+        implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+    }
+    ```
+    2. 어노테이션으로 API 명세를 정의한다.
+        - @Operation: 각 엔드포인트의 제목과 설명을 정의한다. summary에 간단한 설명, description에 상세 설명을 적는다.
+        - @ApiResponses: API의 응답 코드를 정의하며, 각 코드별 응답 메시지를 추가할 수 있다.
+        - @Parameter: 요청 파라미터의 설명을 정의한다. Description에 각 파라미터에 대한 설명을 적을 수 있고, required에 필수 여부를 지정할 수 있다.
+    ```java
+    @Operation(summary = "사용자 정보 조회", description = "ID를 통해 특정 사용자의 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "정상적으로 사용자 정보를 조회했습니다.", content = @Content),
+            @ApiResponse(responseCode = "404", description = "해당 ID를 가진 사용자가 없습니다.", content = @Content) }) 
+    @GetMapping("/{id}") 
+    public String getUserById(@Parameter(description = "조회할 사용자의 ID", required = true) @PathVariable("id") Long id) { 
+        return "특정 사용자 정보 반환";
+    }
+    ```
+    3. 서버를 실행하고, /swagger-ui.html 경로로 문서를 확인한다.
+
+
+- **장점**
+    - 코드와 문서를 동기화하여, 코드에 변화가 생길 때마다 API 문서도 자동으로 갱신된다.
+    - Swagger UI를 통해 직관적인 API 문서를 제공하고, 이를 이용한 테스트가 가능하다.
+    - OAS를 기반으로 문서를 생성해 표준화된 형태의 문서화를 지원한다.
+
+
+- **단점**
+    - 코드가 변경되었을 때 어노테이션을 업데이트하지 않으면 코드와 문서 간 불일치가 발생할 수 있다.
+    - 프로덕션 코드에 어노테이션을 추가하며 코드를 복잡하게 만들 수 있다. 이로 인해 가독성이 떨어질 수 있다.
