@@ -115,6 +115,9 @@ Swagger는 API 문서를 표준화하여 정의하고, 이를 기반으로 자�
     ```
     3. 서버를 실행하고, /swagger-ui.html 경로로 문서를 확인한다.
 
+        <img width="452" alt="image" src="https://github.com/user-attachments/assets/fe58ea1c-fb35-4128-9273-f44a00c1d5e4">
+        <img width="452" alt="image" src="https://github.com/user-attachments/assets/34d79917-095e-4f07-824c-56c62963e57f">
+
 
 - **장점**
     - 코드와 문서를 동기화하여, 코드에 변화가 생길 때마다 API 문서도 자동으로 갱신된다.
