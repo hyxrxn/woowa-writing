@@ -8,19 +8,19 @@
     1. API Docs란 
         - API Docs에 대한 간단한 설명 및 사용 이유 
     2. 대표적인 종류
-        - postman 
-        - swagger 
-        - restdocs
+        - Postman 
+        - Swagger 
+        - REST Docs
     
     
-2.	swagger와 restdocs 결합하기 
-    1. swagger와 swagger ui 
+2.	Swagger와 REST Docs 결합하기 
+    1. Swagger와 Swagger UI 
         - 각각의 차이점 
-    2. restdocs를 이용해 swagger ui 사용하기 
+    2. REST Docs를 이용해 Swagger UI 사용하기 
         - 과정 및 원리 
         - 적용법
     3. 추가 팁 
-        - restdocs 더 예쁘게 사용하기
+        - REST Docs 더 예쁘게 사용하기
 
 --------
 
@@ -93,7 +93,7 @@ Swagger는 API 문서를 표준화하여 정의하고, 이를 기반으로 자�
 이후 웹 기반의 UI로 API를 테스트할 수 있다.
 
 - **사용법 (Spring Boot 프로젝트 기준)**
-    1. Build.gradle 파일에 의존성을 추가한다.
+    1. build.gradle 파일에 의존성을 추가한다.
     ```
     dependencies {
         implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
@@ -107,13 +107,13 @@ Swagger는 API 문서를 표준화하여 정의하고, 이를 기반으로 자�
     @Operation(summary = "사용자 정보 조회", description = "ID를 통해 특정 사용자의 정보를 반환합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "정상적으로 사용자 정보를 조회했습니다.", content = @Content),
-            @ApiResponse(responseCode = "404", description = "해당 ID를 가진 사용자가 없습니다.", content = @Content) }) 
+            @ApiResponse(responseCode = "404", description = "해당 ID를 가진 사용자가 없습니다.", content = @Content)}) 
     @GetMapping("/{id}") 
     public String getUserById(@Parameter(description = "조회할 사용자의 ID", required = true) @PathVariable("id") Long id) { 
         return "특정 사용자 정보 반환";
     }
     ```
-    3. 서버를 실행하고, /swagger-ui.html 경로로 문서를 확인한다.
+    3. 서버를 실행하고, `/swagger-ui.html` 경로로 문서를 확인한다.
 
         <img width="452" alt="image" src="https://github.com/user-attachments/assets/fe58ea1c-fb35-4128-9273-f44a00c1d5e4">
         <img width="452" alt="image" src="https://github.com/user-attachments/assets/34d79917-095e-4f07-824c-56c62963e57f">
