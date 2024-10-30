@@ -128,3 +128,195 @@ Swagger는 API 문서를 표준화하여 정의하고, 이를 기반으로 자�
 - **단점**
     - 코드가 변경되었을 때 어노테이션을 업데이트하지 않으면 코드와 문서 간 불일치가 발생할 수 있다.
     - 프로덕션 코드에 어노테이션을 추가하며 코드를 복잡하게 만들 수 있다. 이로 인해 가독성이 떨어질 수 있다.
+
+
+#### REST Docs
+Spring REST Docs는 Spring 프레임워크 기반의 애플리케이션에서 RESTful API 문서를 생성하는 툴이다.
+테스트 코드를 기반으로 문서화하기 때문에 코드와 문서의 일관성을 유지할 수 있다.
+Swagger와 달리 인터랙티브한 UI는 제공하지 않지만, 정확하고 신뢰할 수 있는 문서를 생성하는 데에 강점이 있다.
+
+- **사용법 (Spring Boot 프로젝트 기준)**
+    1. build.gradle 파일에 의존성을 추가한다.
+    ```
+    dependencies {
+        testImplementation 'org.springframework.restdocs:spring-restdocs-restassured:3.0.0'
+        testImplementation 'io.rest-assured:rest-assured:4.4.0'
+    }
+    ```
+    2. 테스트를 아래와 같이 설정한다.
+    ```java
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+    public class ApiDocumentationTest {
+  
+        private RequestSpecification spec;
+ 
+        @BeforeEach
+        public void setUp(RestDocumentationContextProvider restDocumentation) {
+            spec = new RequestSpecBuilder()
+              .addFilter(documentationConfiguration(restDocumentation)
+                    .operationPreprocessors()
+                    .withRequestDefaults(prettyPrint())
+                    .withResponseDefaults(prettyPrint())
+              )
+              .setPort(port)
+              .build();
+      }
+    }
+    ```
+    3. 테스트를 작성한다.
+    ```java
+    @Test
+    @DisplayName("게시글의 좋아요 여부를 조회한다.")
+    void readLike() {
+        RestAssured.given(spec).log().all()
+                .filter(document(DEFAULT_RESTDOCS_PATH,
+                        "특정 레시피의 좋아요 여부를 조회합니다.",
+                        "레시피별 좋아요 여부 조회 API",
+                        pathParameters(
+                                parameterWithName("recipeId").description("레시피 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("isLike").description("나의 좋아요 여부")
+                        )))
+                .when().get("/likes/{recipeId}", 2L)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .body("isLike", is(true));
+    }
+    ```
+    4. `./gradlew asciidoctor`를 실행하여 문서를 생성한다.
+
+
+- **장점**
+    - API 테스트와 문서화를 동시에 수행하여, 코드와 문서 간의 일관성을 유지하고 문서의 신뢰도가 올라간다. 
+    - Spring 프레임워크와 긴밀히 연동되며, 프로덕션 코드에 영향을 미치지 않고 별도의 테스트 코드로 문서를 관리할 수 있다.
+
+
+- **단점**
+    - Swagger나 Postman에 비해 초기 설정이 까다롭고, 사용법을 익히는 데 시간이 걸릴 수 있다. 
+    - Swagger처럼 웹 UI에서 문서를 바로 확인하고 테스트할 수 있는 기능이 없다. 
+    - 문서화가 테스트 코드에 의존하기 때문에 API 테스트를 먼저 작성해야 한다.
+
+
+## 2.	Swagger와 REST Docs 결합하기
+### A. Swagger와 Swagger UI
+#### 각각의 차이점
+- Swagger
+    - API 명세(스펙)를 정의하는 도구와 라이브러리 모음이다.
+    - RESTful API의 구조, 엔드포인트, 파라미터, 응답 등을 YAML 또는 JSON 포맷으로 작성한다. 
+    - Swagger는 OpenAPI Specification(OAS)의 일종으로, Api의 설계와 문서화를 위해 사용된다.
+    - 이를 통해 개발자들이 Api 인터페이스를 표준화된 방식으로 정의하고 공유할 수 있다.
+
+- Swagger UI 
+    - Swagger로 정의된 Api 명세 파일을 시각화하여 웹 인터페이스로 표현해주는 도구이다.
+    - API 사용자나 개발자가 명세를 인터랙티브하게 탐색하고 테스트할 수 있게 해주며, 엔드포인트를 호출해볼 수 있는 기능을 제공한다.
+
+    
+### REST Docs를 이용해 Swagger UI 사용하기
+#### 과정 및 원리
+위에서 살펴보았듯, 사실 Swagger의 큰 장점인 웹 기반의 UI는 엄밀히 말해 Swagger가 아니다.
+Swagger는 Api 명세 작성 도구에 불과하고 그 결과물을 보여주는 인터페이스는 Swagger UI이다.
+그래서 다른 도구로 Swagger UI가 이해할 수 있는 문서를 만든다면, 프로덕션 코드에 어노테이션을 붙이는 불편함을 해결할 수 있다.
+
+#### 적용법
+1. build.gradle 파일에 플러그인과 의존성을 추가한다.
+```
+plugins {
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
+}
+
+dependencies {
+	testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+	testImplementation 'com.epages:restdocs-api-spec-restassured:0.18.2'
+	testImplementation 'com.epages:restdocs-api-spec-mockmvc:0.18.2'
+}
+```
+2. build.gradle 파일에 설정 블록과 task를 정의한다.
+```
+openapi3 {
+	server = 'http://localhost:8080'
+	title = 'Pengcook API'
+	description = 'Pengcook API description'
+	version = '0.1.0'
+	format = 'yaml'
+}
+
+tasks.register("copyOasToSwagger", Copy) {
+	dependsOn("openapi3")
+
+	from layout.buildDirectory.file("api-spec/openapi3.yaml").get().asFile
+	into "src/main/resources/static"
+}
+
+bootJar {
+	dependsOn copyOasToSwagger
+}
+```
+3. 위의 REST Docs 사용법을 따라 테스트를 설정하고 작성한다.
+4. `copyOasToSwagger`를 실행하면 `openapi3.yaml` 이 `resources/static` 으로 들어온다.
+5. 서버를 실행하고, `/swagger-ui/index.html` 경로로 문서를 확인한다.
+
+### 추가 팁
+#### REST Docs 더 예쁘게 사용하기
+- spec을 정의할 때, 여러 세팅을 할 수 있다.
+  - 예를 들어, 필요 없는 헤더를 지울 수 있다.
+```java
+RequestSpecification spec = new RequestSpecBuilder()
+        .addFilter(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(prettyPrint(), modifyHeaders()
+                        .remove("Host")
+                        .remove("Content-Length")
+                )
+                .withResponseDefaults(prettyPrint(), modifyHeaders()
+                        .remove("Transfer-Encoding")
+                        .remove("Keep-Alive")
+                        .remove("Date")
+                        .remove("Connection")
+                        .remove("Content-Length")
+                )
+        )
+        .setPort(port)
+        .build();
+```
+
+- 상속을 통해 불필요한 중복을 지울 수 있다.
+  - REST Docs를 위해 작성하는 컨트롤러 테스트 코드마다 spec의 정의가 중복되는 것은 불필요하다.
+```java
+@ExtendWith(RestDocumentationExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public abstract class RestDocsSetting {
+
+    protected static final String DEFAULT_RESTDOCS_PATH = "{class_name}/{method_name}/";
+
+    protected RequestSpecification spec;
+    @LocalServerPort
+    int port;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
+
+    @BeforeEach
+    void setUpRestDocs(RestDocumentationContextProvider restDocumentation) {
+        spec = new RequestSpecBuilder()
+                .addFilter(documentationConfiguration(restDocumentation)
+                        .operationPreprocessors()
+                        .withRequestDefaults(prettyPrint(), modifyHeaders()
+                                .remove("Host")
+                                .remove("Content-Length")
+                        )
+                        .withResponseDefaults(prettyPrint(), modifyHeaders()
+                                .remove("Transfer-Encoding")
+                                .remove("Keep-Alive")
+                                .remove("Date")
+                                .remove("Connection")
+                                .remove("Content-Length")
+                        )
+                )
+                .setPort(port)
+                .build();
+    }
+}
+```
