@@ -59,25 +59,25 @@ Postman은 API 개발 및 테스트에 쓰이는 대표적인 툴이다.
 이 글에서는 이 문서 작성 기능을 위주로 설명한다.
 
 - **사용법**
-  1. Collections 탭에서 + 버튼을 눌러 새 컬렉션을 만든다. 
-
-        <img width="379" alt="image" src="https://github.com/user-attachments/assets/6671e408-3789-47f6-aba5-26d509aaf2aa">
+  1. Collections 탭에서 + 버튼을 눌러 새 컬렉션을 만든다.
+ 
+        <img width="379" alt="image" src="https://github.com/user-attachments/assets/4993f380-b0ed-4b2b-b258-db71c072e755">
 
   2. 컬렉션 이름 우측의 세 점을 눌러 Add Request로 새 요청을 만든다. 
 
-        <img width="375" alt="image" src="https://github.com/user-attachments/assets/8ddffde8-3061-4c21-9d89-176c450e3087">
+        <img width="375" alt="image" src="https://github.com/user-attachments/assets/c544309f-e941-446b-95a3-902c9df9f5a7">
   
   3. 서버를 실행하고, API 요청을 전송해 실제 서버로부터 응답을 받는다. 
 
         <img width="452" alt="image" src="https://github.com/user-attachments/assets/44d1f534-3a76-465f-8a68-e8e2408c76ce">
   
-  4. 컬렉션 이름 우측의 세 점을 눌러 View documentation으로 컬렉션과 요청에 대한 설명을 적는다. 
+  4. 컬렉션 이름 우측의 세 점을 눌러 View documentation으로 컬렉션과 요청에 대한 설명을 적는다.
 
-        <img width="452" alt="image" src="https://github.com/user-attachments/assets/58503a9a-1a2f-478f-8ca2-d0e349503899">
+        <img width="452" alt="image" src="https://github.com/user-attachments/assets/f54e0b0e-931a-4d2f-b0eb-0ddbe6af3515">
 
-  5. 우측 상단의 Publish 버튼을 눌러 추가 정보를 입력하고 문서를 생성한다. 문서는 링크를 통해 공유할 수 있다. 
+  5. 우측 상단의 Publish 버튼을 눌러 추가 정보를 입력하고 문서를 생성한다. 문서는 링크를 통해 공유할 수 있다.
 
-        <img width="452" alt="image" src="https://github.com/user-attachments/assets/f7b2a36f-9690-4e81-9595-bc098fc50a40">
+        <img width="452" alt="image" src="https://github.com/user-attachments/assets/bb5aafce-0616-4381-88ee-6b8aa42d428a">
   
   6. 추가적으로 환경 변수를 설정할 수 있다.
 
