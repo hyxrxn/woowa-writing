@@ -270,6 +270,9 @@ bootJar {
 	dependsOn copyOasToSwagger
 }
 ```
+![image](https://github.com/user-attachments/assets/035444dd-5e50-4bbe-aad1-0e3edadc5c70)
+
+
 3. 위의 REST Docs 사용법을 따라 테스트를 설정하고 작성한다.
 4. `copyOasToSwagger`를 실행하면 `openapi3.yaml`이 `resources/static`으로 들어온다.
 5. 서버를 실행하고, `/swagger-ui/index.html` 경로로 문서를 확인한다.
